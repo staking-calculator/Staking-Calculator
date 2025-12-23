@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staking Calculator Demo</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #fff;
+  padding: 20px;
+}
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+h2 { text-align: center; }
+label { display: block; margin-top: 10px; }
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: none;
+}
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #22c55e;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.result {
+  margin-top: 15px;
+  background: #020617;
+  padding: 10px;
+  border-radius: 5px;
+}
+small { color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Staking Calculator</h2>
+
+  <label>Capital</label>
+  <input type="number" id="capital" value="10000">
+
+  <label>Days (max 300)</label>
+  <input type="number" id="days" value="10">
+
+  <label>Level 1 Referral Capital (5%)</label>
+  <input type="number" id="l1" value="0">
+
+  <label>Level 2 Referral Capital (4%)</label>
+  <input type="number" id="l2" value="0">
+
+  <label>Level 3 Referral Capital (3%)</label>
+  <input type="number" id="l3" value="0">
+
+  <label>Level 4 Referral Capital (2%)</label>
+  <input type="number" id="l4" value="0">
+
+  <label>Level 5 Referral Capital (1%)</label>
+  <input type="number" id="l5" value="0">
+
+  <button onclick="compute()">Compute</button>
+
+  <div class="result" id="output"></div>
+</div>
+
+<script>
+function compute() {
+  let capital = parseFloat(document.getElementById('capital').value) || 0;
+  let days = parseInt(document.getElementById('days').value) || 0;
+  days = Math.min(days, 300);
+
+  let refs = [
+    parseFloat(document.getElementById('l1').value) || 0,
+    parseFloat(document.getElementById('l2').value) || 0,
+    parseFloat(document.getElementById('l3').value) || 0,
+    parseFloat(document.getElementById('l4').value) || 0,
+    parseFloat(document.getElementById('l5').value) || 0
+  ];
+
+  const rates = [0.05, 0.04, 0.03, 0.02, 0.01];
+  const dailyRate = 0.01;
+  const cap = capital * 3;
+
+  let staking = capital * dailyRate * days;
+
+  let referral = 0;
+  for (let i = 0; i < 5; i++) {
+    referral += refs[i] * rates[i];
+  }
+
+  let potential = staking + referral;
+  let credited = Math.min(potential, cap);
+  let overflow = Math.max(0, potential - cap);
+
+  document.getElementById('output').innerHTML = `
+    <p>Daily Income: <b>₱${(capital * dailyRate).toFixed(2)}</b></p>
+    <p>Staking (${days} days): <b>₱${staking.toFixed(2)}</b></p>
+    <p>Referral Bonus: <b>₱${referral.toFixed(2)}</b></p>
+    <hr>
+    <p>Max Allowed (300%): <b>₱${cap.toFixed(2)}</b></p>
+    <p>Credited to User: <b style="color:#22c55e">₱${credited.toFixed(2)}</b></p>
+    <p>Overflow to System: <b style="color:#f87171">₱${overflow.toFixed(2)}</b></p>
+    <small>*If credited reaches max, staking ends.</small>
+  `;
+}
+</script>
+
+</body>
+</html>
+
